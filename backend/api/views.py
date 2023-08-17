@@ -45,6 +45,39 @@ class CustomUserViewSet(UserViewSet):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     http_method_names = ["get", "post", "delete"]
 
+    @action(
+        detail=True,
+        methods=["POST", "DELETE"],
+        permission_classes=[IsAuthenticated],
+    )
+    def subscribe(self, request, id):
+        to_subscribe = self.get_object()
+        subscriber = request.user
+        if request.method == "POST":
+            if subscriber.subscriptions.filter(id=to_subscribe.id).exists():
+                return Response(
+                    {"detail": "Автор уже добавлен в подписки."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            subscriber.subscriptions.add(to_subscribe)
+            subscriber.save()
+
+            serializer = CustomUserSerializer(to_subscribe)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            if not subscriber.subscriptions.filter(
+                id=to_subscribe.id
+            ).exists():
+                return Response(
+                    {"detail": "Автора нет в подписках."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            subscriber.subscriptions.remove(to_subscribe)
+            subscriber.save()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
@@ -105,23 +138,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             user.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-    # @action(
-    #     detail=True, methods=["delete"], permission_classes=[IsAuthenticated]
-    # )
-    # def unfavorite(self, request, pk=None):
-    #     recipe = self.get_object()
-    #     user = request.user
-
-    #     if not user.favorite_recipes.filter(id=recipe.id).exists():
-    #         return Response(
-    #             {"detail": "Рецепта нет в избранном."},
-    #             status=status.HTTP_400_BAD_REQUEST,
-    #         )
-
-    #     user.favorite_recipes.remove(recipe)
-    #     user.save()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
-
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
@@ -146,3 +162,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     # permission_classes = (IsAdminOrReadOnly,)
     # filter_backends = (DjangoFilterBackend,)
     # filterset_class = IngredientFilter
+
+
+# class SubscriptionViewSet

@@ -104,10 +104,10 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             "text",
             "cooking_time",
         )
-        # read_only_fields = (
-        #     "is_favorite",
-        #     "is_shopping_cart",
-        # )
+        read_only_fields = (
+            "is_favorited",
+            # "is_shopping_cart",
+        )
 
 
 class RecipeWriteSerializer(serializers.ModelSerializer):
@@ -117,6 +117,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     )
     image = Base64ImageField(required=False, allow_null=True)
     author = CustomUserSerializer(read_only=True)
+    is_favorited = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -131,6 +132,11 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             "image",
             "text",
             "cooking_time",
+        )
+
+        read_only_fields = (
+            "is_favorited",
+            # "is_shopping_cart",
         )
 
     def create(self, validated_data):
@@ -157,6 +163,14 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         )
 
         return serializer.data
+
+    def get_is_favorited(self, obj):
+        user = self.context["request"].user
+
+        if user.is_authenticated:
+            print(obj.favorited_by_users.all())
+            return obj.favorited_by_users.filter(id=user.id).exists()
+        return False
 
     def update(self, instance, validated_data):
         tags_data = validated_data.pop("tags", [])

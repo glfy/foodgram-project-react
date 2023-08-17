@@ -12,7 +12,7 @@ class CustomUserSerializer(UserSerializer):
     Serializer for User model.
     """
 
-    # is_subscribed = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -25,11 +25,12 @@ class CustomUserSerializer(UserSerializer):
             "is_subscribed",
         )
 
-    # def get_is_subscribed(self, object):
-    #     user = self.context.get("request").user
-    #     if user.is_anonymous:
-    #         return False
-    #     return Follow.objects.filter(user=user, author=object.id).exists()
+    def get_is_subscribed(self, object):
+        print(self.context)
+        user = self.context("request").user
+        if user.is_anonymous:
+            return False
+        return user.subsctiptions.filter(id=object.id).exists()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):

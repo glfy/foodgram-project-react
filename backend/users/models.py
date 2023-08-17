@@ -25,6 +25,13 @@ class User(AbstractUser):
         default=False,
         editable=False,
     )
+    # удалить и сделать снова миграции
+
+    subscriptions = models.ManyToManyField(
+        "users.User",
+        related_name="subscribers",
+        blank=True
+    )
     password = models.CharField(
         max_length=128,
         verbose_name="Пароль",
@@ -46,4 +53,5 @@ class User(AbstractUser):
         return self.username[:15]
 
 
-# Create your models here.
+# # Create your models here.
+# class Follow(models.Model):
