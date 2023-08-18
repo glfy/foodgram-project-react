@@ -17,10 +17,7 @@ class CustomUserAdmin(BaseUserAdmin):
     ordering = ("username",)
 
 
-admin.site.site_header = (
-    "Foodgram Admin"  # Optional: Set the admin site header
-)
-admin.site.site_title = "Foodgram Admin"  # Optional: Set the admin site title
+admin.site.site_header = "Foodgram Admin"
+admin.site.site_title = "Foodgram Admin"
 
-# Register your User model using the CustomUserAdmin
 admin.site.register(User, CustomUserAdmin)

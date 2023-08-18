@@ -1,8 +1,6 @@
-from django.core.validators import RegexValidator
 from rest_framework import serializers
 
-# from recipes.models import Ingredient
-
+from django.core.validators import RegexValidator
 
 slug_validator = RegexValidator(
     regex=r"^[-a-z0-9_]+$",
@@ -22,11 +20,6 @@ username_validator = RegexValidator(
 def validate_ingridients(value_list):
     validated_ingredients = []
 
-    # if not isinstance(value, dict):
-    #     raise serializers.ValidationError(
-    #         "Ингредиенты должны быть переданы в формате"
-    #         "{ингредиент: количество}"
-    #     )
     for value in value_list:
         if not isinstance(value, dict):
             raise serializers.ValidationError(

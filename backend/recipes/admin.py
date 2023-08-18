@@ -42,7 +42,7 @@ class RecipeAdmin(admin.ModelAdmin):
                     "image",
                     "text",
                     "cooking_time",
-                    "tags"
+                    "tags",
                 ),
             },
         ),

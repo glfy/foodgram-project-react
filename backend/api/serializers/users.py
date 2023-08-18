@@ -75,10 +75,6 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
         serializer = self.recipes_serializer(user)
         return serializer.data
 
-    # subscriptions = serializers.PrimaryKeyRelatedField(
-    #     many=True, queryset=get_user_model().objects.all()
-    # )
-
     class Meta:
         model = User
         fields = (

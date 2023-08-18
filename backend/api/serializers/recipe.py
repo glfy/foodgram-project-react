@@ -36,14 +36,6 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-# class IngredientInRecipeSerializer(serializers.ModelSerializer):
-#     ingredient = IngredientSerializer(source="*")
-
-#     class Meta:
-#         model = IngredientInRecipe
-#         fields = ["ingredient", "amount"]
-
-
 class RecipeReadSerializer(serializers.ModelSerializer):
     ingredients = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
