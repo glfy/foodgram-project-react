@@ -12,7 +12,11 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.db.models import Q
 
-from api.serializers.users import CustomUserSerializer
+from api.serializers.users import (
+    CustomUserSerializer,
+    CustomUserCreateSerializer,
+    UserSubscriptionsSerializer,
+)
 from users.models import User
 from recipes.models import (
     Tag,
@@ -63,7 +67,9 @@ class CustomUserViewSet(UserViewSet):
             subscriber.subscriptions.add(to_subscribe)
             subscriber.save()
 
-            serializer = CustomUserSerializer(to_subscribe)
+            serializer = UserSubscriptionsSerializer(
+                to_subscribe, context={"request": request}
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             if not subscriber.subscriptions.filter(
@@ -125,7 +131,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
             user.favorite_recipes.add(recipe)
             user.save()
-            serializer = RecipeMinifiedSerializer(recipe)
+            serializer = UserSubscriptionsSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             if not user.favorite_recipes.filter(id=recipe.id).exists():
