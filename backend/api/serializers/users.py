@@ -1,11 +1,7 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from rest_framework import serializers, status
-from rest_framework.response import Response
-
-from django.contrib.auth import get_user_model
+from rest_framework import serializers
 
 from users.models import User
-from rest_framework.fields import CurrentUserDefault
 
 
 class CustomUserSerializer(UserSerializer):
@@ -54,6 +50,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 class UserSubscriptionsSerializer(serializers.ModelSerializer):
     recipes_count = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
 
     def get_recipes_count(self, user):
         return user.recipes.count()
@@ -68,7 +65,7 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
         subscribed_recipes = user.recipes.all()
 
         return RecipeMinifiedSerializer(
-            instance=subscribed_recipes,
+            subscribed_recipes,
             many=True,
             read_only=True,
             context=self.context,
@@ -94,3 +91,10 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
             "recipes",
             "recipes_count",
         )
+        read_only_fields = ("email", "username", "first_name", "last_name")
+
+    def get_is_subscribed(self, object):
+        user = self.context["request"].user
+        if user.is_anonymous or (user == object):
+            return False
+        return user.subscriptions.filter(id=object.id).exists()

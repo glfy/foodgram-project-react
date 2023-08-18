@@ -1,16 +1,16 @@
-from rest_framework import serializers
-from recipes.models import Tag, IngredientInRecipe, Recipe, Ingredient
-from .users import CustomUserSerializer
-from django.db.models import F
-from core.validators import validate_ingridients
 import base64
-from django.core.files.base import ContentFile
-from django.db.models import QuerySet
+
+from rest_framework import serializers, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.http import HttpResponse
-from rest_framework import status
+
+from django.core.files.base import ContentFile
+
+from core.validators import validate_ingridients
+from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
+
+from .users import CustomUserSerializer
 
 
 class Base64ImageField(serializers.ImageField):
@@ -50,7 +50,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     image = Base64ImageField(required=False, allow_null=True)
     is_favorited = serializers.SerializerMethodField()
-    # is_in_shopping_cart = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     def get_ingredients(self, obj):
         ingredients = obj.ingredient_quantities.all()
@@ -78,17 +78,15 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 
     def get_is_favorited(self, obj):
         user = self.context["request"].user
-
         if user.is_authenticated:
-            print(obj.favorited_by_users.all())
             return obj.favorited_by_users.filter(id=user.id).exists()
         return False
 
-    # def get_is_in_shopping_cart(self, obj):
-    #     user = self.context["request"].user
-    #     if user.is_authenticated:
-    #         return obj.shopping_cart.filter(user=user).exists()
-    #     return False
+    def get_is_in_shopping_cart(self, obj):
+        user = self.context["request"].user
+        if user.is_authenticated:
+            return obj.recipes_in_shopping_cart.filter(id=user.id).exists()
+        return False
 
     class Meta:
         model = Recipe
@@ -98,7 +96,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             "author",
             "ingredients",
             "is_favorited",
-            # "is_in_shopping_cart",
+            "is_in_shopping_cart",
             "name",
             "image",
             "text",
@@ -106,7 +104,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             "is_favorited",
-            # "is_shopping_cart",
+            "is_shopping_cart",
         )
 
 
@@ -118,6 +116,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
     image = Base64ImageField(required=False, allow_null=True)
     author = CustomUserSerializer(read_only=True)
     is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
@@ -127,7 +126,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             "author",
             "ingredients",
             "is_favorited",
-            # "is_in_shopping_cart",
+            "is_in_shopping_cart",
             "name",
             "image",
             "text",
@@ -136,7 +135,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
 
         read_only_fields = (
             "is_favorited",
-            # "is_shopping_cart",
+            "is_shopping_cart",
         )
 
     def create(self, validated_data):
@@ -169,6 +168,12 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
 
         if user.is_authenticated:
             return obj.favorited_by_users.filter(id=user.id).exists()
+        return False
+
+    def get_is_in_shopping_cart(self, obj):
+        user = self.context["request"].user
+        if user.is_authenticated:
+            return obj.recipes_in_shopping_cart.filter(user=user).exists()
         return False
 
     def update(self, instance, validated_data):

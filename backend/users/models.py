@@ -3,8 +3,6 @@ from django.db import models
 
 from core.validators import username_validator
 
-# recipe = models.ForeignKey("recipes", "Recipe")
-
 
 class User(AbstractUser):
     id = models.AutoField(primary_key=True)
@@ -20,17 +18,14 @@ class User(AbstractUser):
     )
     first_name = models.CharField(max_length=150, verbose_name="Имя")
     last_name = models.CharField(max_length=150, verbose_name="Фамилия")
-    is_subscribed = models.BooleanField(
-        verbose_name="Подписан ли текущий пользователь на этого",
-        default=False,
-        editable=False,
-    )
-    # удалить и сделать снова миграции
 
     subscriptions = models.ManyToManyField(
         "users.User",
         related_name="subscribers",
-        blank=True
+        verbose_name="Подписан ли текущий пользователь на этого",
+        default=False,
+        editable=False,
+        blank=True,
     )
     password = models.CharField(
         max_length=128,
@@ -40,9 +35,18 @@ class User(AbstractUser):
     favorite_recipes = models.ManyToManyField(
         "recipes.Recipe",
         related_name="favorited_by_users",
+        verbose_name="Избранные рецепты",
         blank=True,
     )
-    # REQUIRED_FIELDS = ("first_name", "last_name", "password")
+
+    shopping_cart = models.ManyToManyField(
+        "recipes.Recipe",
+        related_name="recipes_in_shopping_cart",
+        verbose_name="Рецепты в корзине",
+        default=False,
+        editable=False,
+        blank=True,
+    )
 
     class Meta:
         verbose_name = "Пользователь"
@@ -51,7 +55,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username[:15]
-
-
-# # Create your models here.
-# class Follow(models.Model):

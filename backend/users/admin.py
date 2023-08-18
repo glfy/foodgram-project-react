@@ -11,10 +11,10 @@ class CustomUserAdmin(BaseUserAdmin):
         "email",
         "first_name",
         "last_name",
-        "is_subscribed",
     )
     list_filter = ("email", "username", "first_name")
     search_fields = ("username", "email", "first_name", "last_name")
+    ordering = ("username",)
 
 
 admin.site.site_header = (

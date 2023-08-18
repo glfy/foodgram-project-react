@@ -31,8 +31,34 @@ class RecipeAdmin(admin.ModelAdmin):
         "tags__name",
     )
     inlines = [IngredientInRecipeInline]
+    fieldsets = (
+        (
+            "Recipe Details",
+            {
+                "fields": (
+                    "name",
+                    "author",
+                    "favorited_by_users_count",
+                    "image",
+                    "text",
+                    "cooking_time",
+                    "tags"
+                ),
+            },
+        ),
+    )
+    readonly_fields = ("favorited_by_users_count",)
 
+    def favorited_by_users_count(self, obj):
+        return obj.favorited_by_users.count()
 
-@admin.register(IngredientInRecipe)
-class IngredientInRecipeAdmin(admin.ModelAdmin):
-    list_display = ("recipe", "ingredient", "amount")
+    favorited_by_users_count.short_description = "Добавлено в избранное"
+
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        extra_context = extra_context or {}
+        extra_context[
+            "favorited_by_users_count"
+        ] = self.favorited_by_users_count(Recipe.objects.get(pk=object_id))
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context
+        )

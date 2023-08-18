@@ -12,7 +12,13 @@ SECRET_KEY = (
 
 DEBUG = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "host.docker.internal", "backend"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "host.docker.internal",
+    "backend",
+    "0.0.0.0",
+]
 
 
 # Application definition
@@ -25,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "django_filters",
     "djoser",
     "rest_framework.authtoken",
     "corsheaders",
@@ -72,7 +79,7 @@ if DEBUG:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+            "NAME": "db.sqlite3",
         }
     }
 else:
@@ -125,9 +132,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 6,
-    # "EXCEPTION_HANDLER": "api.exception_handlers.custom_exception_handler",
+    "EXCEPTION_HANDLER": "api.exception_handlers.custom_exception_handler",
 }
 
 DJOSER = {
@@ -154,11 +159,12 @@ DJOSER = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = "/static/"
+# STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = "/app/static"
 
 
-MEDIA_URL = "media/"
+MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Default primary key field type
