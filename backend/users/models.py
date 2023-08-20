@@ -54,4 +54,4 @@ class User(AbstractUser):
         ordering = ("id",)
 
     def __str__(self):
-        return self.username[:15]
+        return self.username

@@ -4,6 +4,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User
 
 
+@admin.register(User)
 class CustomUserAdmin(BaseUserAdmin):
     list_display = (
         "id",
@@ -19,5 +20,3 @@ class CustomUserAdmin(BaseUserAdmin):
 
 admin.site.site_header = "Foodgram Admin"
 admin.site.site_title = "Foodgram Admin"
-
-admin.site.register(User, CustomUserAdmin)

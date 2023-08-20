@@ -32,7 +32,7 @@ def validate_ingridients(value_list):
         raise serializers.ValidationError(
             "Каждый ингредиент должен иметь 'id' и 'amount'"
         )
-    if not isinstance(amount, int) or amount <= 0:
+    if int(amount) <= 0:
         raise serializers.ValidationError(
             "Количество ингредиента должно быть больше 0."
         )

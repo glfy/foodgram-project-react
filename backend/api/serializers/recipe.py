@@ -26,14 +26,14 @@ class Base64ImageField(serializers.ImageField):
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = "__all__"
-        read_only_fields = ("__all__",)
+        fields = ("id", "name", "color", "slug")
+        read_only_fields = ("name", "color", "slug")
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = "__all__"
+        fields = ("id", "name", "measurement_unit")
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
@@ -186,15 +186,8 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                 recipe=instance, ingredient=ingredient, amount=amount
             )
 
-            for attr, value in validated_data.items():
-                setattr(instance, attr, value)
-            instance.save()
+        return super().update(instance, validated_data)
 
-            return instance
-
-    @action(
-        detail=True, methods=["delete"], permission_classes=[IsAuthenticated]
-    )
     def delete_recipe(self, request, pk=None):
         recipe = self.instance
         if recipe.author == request.user or request.user.is_staff:
