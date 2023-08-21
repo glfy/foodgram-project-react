@@ -3,21 +3,26 @@ from djoser.views import UserViewSet
 from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import (
-    IsAuthenticated, IsAuthenticatedOrReadOnly,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
 )
 from rest_framework.response import Response
 
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Count
 from django.http import HttpResponse
 
 from api.paginators import PageLimitPagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers.recipe import (
-    IngredientSerializer, RecipeMinifiedSerializer, RecipeReadSerializer,
-    RecipeWriteSerializer, TagSerializer,
+    IngredientSerializer,
+    RecipeMinifiedSerializer,
+    RecipeReadSerializer,
+    RecipeWriteSerializer,
+    TagSerializer,
 )
 from api.serializers.users import (
-    CustomUserSerializer, UserSubscriptionsSerializer,
+    CustomUserSerializer,
+    UserSubscriptionsSerializer,
 )
 from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from users.models import User
@@ -26,7 +31,7 @@ from .filters import RecipeFilter
 
 
 class CustomUserViewSet(UserViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.all().annotate(Count("recipes"))
     serializer_class = CustomUserSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
     http_method_names = ["get", "post", "delete"]

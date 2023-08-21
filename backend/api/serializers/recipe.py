@@ -36,37 +36,32 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "measurement_unit")
 
 
+class IngredientinRecipeSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    name = serializers.ReadOnlyField(source="ingredient.name")
+    measurement_unit = serializers.ReadOnlyField(
+        source="ingredient.measurement_unit"
+    )
+
+    class Meta:
+        model = IngredientInRecipe
+        fields = (
+            "id",
+            "name",
+            "measurement_unit",
+            "amount",
+        )
+
+
 class RecipeReadSerializer(serializers.ModelSerializer):
-    ingredients = serializers.SerializerMethodField()
-    tags = serializers.SerializerMethodField()
+    ingredients = IngredientinRecipeSerializer(
+        many=True, source="ingredient_quantities"
+    )
+    tags = TagSerializer(many=True)
     author = CustomUserSerializer(read_only=True)
     image = Base64ImageField(required=False, allow_null=True)
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
-
-    def get_ingredients(self, obj):
-        ingredients = obj.ingredient_quantities.all()
-        serialized_ingredients = [
-            {
-                "id": ingredient.ingredient.id,
-                "name": ingredient.ingredient.name,
-                "measurement_unit": ingredient.ingredient.measurement_unit,
-                "amount": ingredient.amount,
-            }
-            for ingredient in ingredients
-        ]
-        return serialized_ingredients
-
-    def get_tags(self, obj):
-        return [
-            {
-                "id": tag.id,
-                "name": tag.name,
-                "color": tag.color,
-                "slug": tag.slug,
-            }
-            for tag in obj.tags.all()
-        ]
 
     def get_is_favorited(self, obj):
         user = self.context["request"].user

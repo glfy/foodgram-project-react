@@ -48,7 +48,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class UserSubscriptionsSerializer(serializers.ModelSerializer):
-    recipes_count = serializers.SerializerMethodField()
+    # recipes_count = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
 
