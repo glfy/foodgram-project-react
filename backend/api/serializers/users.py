@@ -1,7 +1,7 @@
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
-from users.models import User
+from users.models import User, Subscription
 
 
 class CustomUserSerializer(UserSerializer):
@@ -24,7 +24,9 @@ class CustomUserSerializer(UserSerializer):
         user = self.context["request"].user
         if user.is_anonymous or (user == object):
             return False
-        return user.subscriptions.filter(id=object.id).exists()
+        return Subscription.objects.filter(
+            subscriber=user.id, subscribed_to=object.id
+        ).exists()
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -44,35 +46,19 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class UserSubscriptionsSerializer(serializers.ModelSerializer):
+    from .recipe import RecipeMinifiedSerializer
+
+    recipes = RecipeMinifiedSerializer(many=True, read_only=True)
     recipes_count = serializers.IntegerField(read_only=True)
-    recipes = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
-
-    # def get_recipes_count(self, user):
-    #     return user.recipes.count()
-
-    def recipes_serializer(self, user):
-        """Dynamic import to avoid circular import."""
-        from .recipe import RecipeMinifiedSerializer
-
-        subscribed_recipes = user.recipes.all()
-
-        return RecipeMinifiedSerializer(
-            subscribed_recipes,
-            many=True,
-            read_only=True,
-            context=self.context,
-        )
-
-    def get_recipes(self, user):
-        serializer = self.recipes_serializer(user)
-        return serializer.data
 
     def get_is_subscribed(self, object):
         user = self.context["request"].user
         if user.is_anonymous or (user == object):
             return False
-        return user.subscriptions.filter(id=object.id).exists()
+        return Subscription.objects.filter(
+            subscriber=user.id, subscribed_to=object.id
+        ).exists()
 
     class Meta:
         model = User

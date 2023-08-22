@@ -19,14 +19,6 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=150, verbose_name="Имя")
     last_name = models.CharField(max_length=150, verbose_name="Фамилия")
 
-    subscriptions = models.ManyToManyField(
-        "users.User",
-        related_name="subscribers",
-        verbose_name="Подписан ли текущий пользователь на этого",
-        default=False,
-        editable=False,
-        blank=True,
-    )
     password = models.CharField(
         max_length=128,
         verbose_name="Пароль",
@@ -55,3 +47,23 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+class Subscription(models.Model):
+    subscriber = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="subscriptions",
+        verbose_name="Подписчик",
+    )
+    subscribed_to = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="subscribed_to",
+        verbose_name="Пользователь на которого подписан",
+    )
+
+    class Meta:
+        verbose_name = "Подписка"
+        verbose_name_plural = "Подписки"
+        unique_together = ["subscriber", "subscribed_to"]

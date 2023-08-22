@@ -7,20 +7,27 @@ from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.response import Response
 
 from api.paginators import PageLimitPagination
 from api.permissions import IsAuthorOrReadOnly
-from api.serializers.recipe import (IngredientSerializer,
-                                    RecipeMinifiedSerializer,
-                                    RecipeReadSerializer,
-                                    RecipeWriteSerializer, TagSerializer)
-from api.serializers.users import (CustomUserSerializer,
-                                   UserSubscriptionsSerializer)
+from api.serializers.recipe import (
+    IngredientSerializer,
+    RecipeMinifiedSerializer,
+    RecipeReadSerializer,
+    RecipeWriteSerializer,
+    TagSerializer,
+)
+from api.serializers.users import (
+    CustomUserSerializer,
+    UserSubscriptionsSerializer,
+)
 from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
-from users.models import User
+from users.models import User, Subscription
 
 from .filters import RecipeFilter
 
@@ -40,7 +47,11 @@ class CustomUserViewSet(UserViewSet):
     def subscriptions(self, request):
         subscriber = request.user
         queryset = (
-            subscriber.subscriptions.all()
+            User.objects.filter(
+                id__in=Subscription.objects.filter(
+                    subscriber=subscriber
+                ).values_list("subscribed_to")
+            )
             .order_by("id")
             .annotate(recipes_count=Count("recipes"))
         )
@@ -74,21 +85,28 @@ class CustomUserViewSet(UserViewSet):
             )
 
         if request.method == "POST":
-            if subscriber.subscriptions.filter(id=to_subscribe.id).exists():
+            if Subscription.objects.filter(
+                subscriber=subscriber,
+                subscribed_to=to_subscribe,
+            ).exists():
                 return Response(
                     {"detail": "Автор уже добавлен в подписки."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            subscriber.subscriptions.add(to_subscribe)
-            subscriber.save()
+            Subscription.objects.create(
+                subscriber=subscriber, subscribed_to=to_subscribe
+            )
 
             serializer = UserSubscriptionsSerializer(
                 to_subscribe, context={"request": request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        deleted_count = subscriber.subscriptions.remove(to_subscribe)
+        deleted_count = Subscription.objects.filter(
+            subscriber=subscriber,
+            subscribed_to=to_subscribe,
+        ).delete()
         if deleted_count == 0:
             return Response(
                 {"detail": "Автора нет в подписках."},
@@ -220,35 +238,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
         response["Content-Disposition"] = "attachment; filename=pipi.txt"
         return response
-
-
-#     @action(
-#         detail=False, methods=["GET"], permission_classes=[IsAuthenticated]
-#     )
-#     def download_shopping_cart(self, request):
-#         ingredients = (
-#             IngredientInRecipe.objects.filter(
-#                 recipe__recipes_in_shopping_cart=request.user.id
-#             )
-#             .order_by("ingredient__name")
-#             .values("ingredient__name", "ingredient__measurement_unit")
-#             .annotate(amount=Sum("amount"))
-#         )
-
-#         # concatenate ingredient names and amounts to txt
-#         shopping_list = "\n".join(
-#             [
-#                 f"""{ing['ingredient__name']} - {ing['amount']} \
-# {ing['ingredient__measurement_unit']}"""
-#                 for ing in ingredients
-#             ]
-#         )
-
-#         response = HttpResponse(shopping_list, content_type="text/plain")
-#         response[
-#             "Content-Disposition"
-#         ] = "attachment; filename=download_shopping_list"
-#         return response
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
