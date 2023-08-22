@@ -8,9 +8,7 @@ User = get_user_model()
 
 
 class Tag(models.Model):
-    """
-    Model representing a tag.
-    """
+    """Модель тега."""
 
     name = models.CharField(
         max_length=200,
@@ -19,7 +17,7 @@ class Tag(models.Model):
         db_index=True,
     )
     color = models.CharField(
-        max_length=7, null=True, blank=True, verbose_name="Цвет в HEX"
+        max_length=7, blank=True, verbose_name="Цвет в HEX"
     )
     slug = models.SlugField(
         max_length=200,
@@ -29,18 +27,16 @@ class Tag(models.Model):
         db_index=True,
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = "Тег"
         verbose_name_plural = "Теги"
 
+    def __str__(self):
+        return self.name
+
 
 class Ingredient(models.Model):
-    """
-    Model representing an ingredient.
-    """
+    """Модель ингредиента."""
 
     name = models.CharField(
         max_length=200,
@@ -51,19 +47,17 @@ class Ingredient(models.Model):
         max_length=200, verbose_name="Единицы измерения"
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = "Ингредиент"
         verbose_name_plural = "Ингредиенты"
         unique_together = ["name", "measurement_unit"]
 
+    def __str__(self):
+        return self.name
+
 
 class Recipe(models.Model):
-    """
-    Model representing a recipe.
-    """
+    """Модель рецепта."""
 
     author = models.ForeignKey(
         User,
@@ -92,20 +86,18 @@ class Recipe(models.Model):
         auto_now_add=True, verbose_name="Дата публикации"
     )
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = "Рецепт"
         verbose_name_plural = "Рецепты"
         indexes = [models.Index(fields=["name"])]
         ordering = ["-pub_date"]
 
+    def __str__(self):
+        return self.name
+
 
 class IngredientInRecipe(models.Model):
-    """
-    Model representing an ingredient in a recipe.
-    """
+    """Модель связи ингредиента и рецепта."""
 
     recipe = models.ForeignKey(
         Recipe,
@@ -123,10 +115,6 @@ class IngredientInRecipe(models.Model):
         verbose_name="Количество", validators=[MinValueValidator(1)]
     )
 
-    def __str__(self):
-        return f"""{self.amount} {self.ingredient.measurement_unit} of
-                    {self.ingredient.name} in {self.recipe.name}"""
-
     class Meta:
         verbose_name = "Ингредиент в рецепте"
         verbose_name_plural = "Ингредиенты в рецепте"
@@ -135,3 +123,7 @@ class IngredientInRecipe(models.Model):
                 fields=["recipe", "ingredient"], name="unique_ingredient"
             )
         ]
+
+    def __str__(self):
+        return f"""{self.amount} {self.ingredient.measurement_unit} of
+                    {self.ingredient.name} in {self.recipe.name}"""

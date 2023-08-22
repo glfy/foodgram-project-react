@@ -1,6 +1,5 @@
-from rest_framework import serializers
-
 from django.core.validators import RegexValidator
+from rest_framework import serializers
 
 slug_validator = RegexValidator(
     regex=r"^[-a-z0-9_]+$",

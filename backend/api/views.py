@@ -1,31 +1,24 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from djoser.views import UserViewSet
-from rest_framework import serializers, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import (
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-)
-from rest_framework.response import Response
+from io import BytesIO
 
 from django.db.models import Count, Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from io import BytesIO
+from django_filters.rest_framework import DjangoFilterBackend
+from djoser.views import UserViewSet
+from rest_framework import serializers, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import (IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
 
 from api.paginators import PageLimitPagination
 from api.permissions import IsAuthorOrReadOnly
-from api.serializers.recipe import (
-    IngredientSerializer,
-    RecipeMinifiedSerializer,
-    RecipeReadSerializer,
-    RecipeWriteSerializer,
-    TagSerializer,
-)
-from api.serializers.users import (
-    CustomUserSerializer,
-    UserSubscriptionsSerializer,
-)
+from api.serializers.recipe import (IngredientSerializer,
+                                    RecipeMinifiedSerializer,
+                                    RecipeReadSerializer,
+                                    RecipeWriteSerializer, TagSerializer)
+from api.serializers.users import (CustomUserSerializer,
+                                   UserSubscriptionsSerializer)
 from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 from users.models import User
 

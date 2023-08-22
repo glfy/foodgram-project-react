@@ -5,9 +5,7 @@ from users.models import User
 
 
 class CustomUserSerializer(UserSerializer):
-    """
-    Serializer for User model.
-    """
+    """Сериалайзер пользователя"""
 
     is_subscribed = serializers.SerializerMethodField()
 
@@ -30,9 +28,7 @@ class CustomUserSerializer(UserSerializer):
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
-    """
-    Serializer for user registration.
-    """
+    """Сериалайзер создания пользователя"""
 
     class Meta:
         model = User
@@ -56,10 +52,7 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
     #     return user.recipes.count()
 
     def recipes_serializer(self, user):
-        """
-        Dynamic import to avoid circular import.
-
-        """
+        """Dynamic import to avoid circular import."""
         from .recipe import RecipeMinifiedSerializer
 
         subscribed_recipes = user.recipes.all()

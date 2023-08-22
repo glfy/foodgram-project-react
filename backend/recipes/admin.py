@@ -1,7 +1,11 @@
+from typing import Any
+
 from django.contrib import admin
+from django.db.models.query import QuerySet
+from django.http.request import HttpRequest
+from django.shortcuts import get_object_or_404
 
 from .models import Ingredient, IngredientInRecipe, Recipe, Tag
-from django.shortcuts import get_object_or_404
 
 
 @admin.register(Tag)
@@ -50,6 +54,14 @@ class RecipeAdmin(admin.ModelAdmin):
     )
     readonly_fields = ("favorited_by_users_count",)
 
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("author")
+            .prefetch_related("tags", "ingredients")
+        )
+
     def favorited_by_users_count(self, obj):
         return obj.favorited_by_users.count()
 
@@ -58,9 +70,9 @@ class RecipeAdmin(admin.ModelAdmin):
     def change_view(self, request, object_id, form_url="", extra_context=None):
         recipe = get_object_or_404(Recipe, pk=object_id)
         extra_context = extra_context or {}
-        extra_context["favorited_by_users_count"] = self.favorited_by_users_count(
-            recipe
-        )
+        extra_context[
+            "favorited_by_users_count"
+        ] = self.favorited_by_users_count(recipe)
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context
         )
