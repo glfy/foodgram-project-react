@@ -1,15 +1,15 @@
 from rest_framework.views import exception_handler
 
-from django.http import Http404
+from django.http import HttpResponseForbidden, HttpResponseNotFound
 
 
 def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
 
-    if isinstance(exc, Http404):
+    if exc.status_code == HttpResponseNotFound.status_code:
         custom_response_data = {"detail": "Страница не найдена."}
         response.data = custom_response_data
-    elif exc.status_code == 403:
+    elif exc.status_code == HttpResponseForbidden.status_code:
         custom_response_data = {
             "detail": "Недостаточно прав для выполнения данного действия."
         }

@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models import Ingredient, IngredientInRecipe, Recipe, Tag
+from django.shortcuts import get_object_or_404
 
 
 @admin.register(Tag)
@@ -55,10 +56,11 @@ class RecipeAdmin(admin.ModelAdmin):
     favorited_by_users_count.short_description = "Добавлено в избранное"
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
+        recipe = get_object_or_404(Recipe, pk=object_id)
         extra_context = extra_context or {}
-        extra_context[
-            "favorited_by_users_count"
-        ] = self.favorited_by_users_count(Recipe.objects.get(pk=object_id))
+        extra_context["favorited_by_users_count"] = self.favorited_by_users_count(
+            recipe
+        )
         return super().change_view(
             request, object_id, form_url, extra_context=extra_context
         )

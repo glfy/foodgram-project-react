@@ -48,12 +48,12 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class UserSubscriptionsSerializer(serializers.ModelSerializer):
-    # recipes_count = serializers.SerializerMethodField()
+    recipes_count = serializers.IntegerField(read_only=True)
     recipes = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
 
-    def get_recipes_count(self, user):
-        return user.recipes.count()
+    # def get_recipes_count(self, user):
+    #     return user.recipes.count()
 
     def recipes_serializer(self, user):
         """
@@ -75,6 +75,12 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
         serializer = self.recipes_serializer(user)
         return serializer.data
 
+    def get_is_subscribed(self, object):
+        user = self.context["request"].user
+        if user.is_anonymous or (user == object):
+            return False
+        return user.subscriptions.filter(id=object.id).exists()
+
     class Meta:
         model = User
         fields = (
@@ -88,9 +94,3 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
             "recipes_count",
         )
         read_only_fields = ("email", "username", "first_name", "last_name")
-
-    def get_is_subscribed(self, object):
-        user = self.context["request"].user
-        if user.is_anonymous or (user == object):
-            return False
-        return user.subscriptions.filter(id=object.id).exists()

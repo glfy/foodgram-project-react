@@ -6,8 +6,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from django.core.files.base import ContentFile
+from django.shortcuts import get_object_or_404
 
-from core.validators import validate_ingridients
+from core.validators import validate_ingredients
 from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
 
 from .users import CustomUserSerializer
@@ -37,7 +38,9 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientinRecipeSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all(), source="ingredient"
+    )
     name = serializers.ReadOnlyField(source="ingredient.name")
     measurement_unit = serializers.ReadOnlyField(
         source="ingredient.measurement_unit"
@@ -98,7 +101,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
 class RecipeWriteSerializer(serializers.ModelSerializer):
     tags = serializers.ListField(write_only=True)
     ingredients = serializers.ListField(
-        write_only=True, validators=[validate_ingridients]
+        write_only=True, validators=[validate_ingredients]
     )
     image = Base64ImageField(required=False, allow_null=True)
     author = CustomUserSerializer(read_only=True)
@@ -135,7 +138,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             ingredient_id = ingredient_data["id"]
 
             amount = ingredient_data["amount"]
-            ingredient = Ingredient.objects.get(id=ingredient_id)
+            ingredient = get_object_or_404(Ingredient, id=ingredient_id)
 
             IngredientInRecipe.objects.create(
                 recipe=recipe, ingredient=ingredient, amount=amount
@@ -175,8 +178,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         for ingredient_data in ingredients_data:
             ingredient_id = ingredient_data["id"]
             amount = ingredient_data["amount"]
-            ingredient = Ingredient.objects.get(id=ingredient_id)
-
+            ingredient = get_object_or_404(Ingredient, id=ingredient_id)
             IngredientInRecipe.objects.create(
                 recipe=instance, ingredient=ingredient, amount=amount
             )
@@ -188,14 +190,14 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         if recipe.author == request.user or request.user.is_staff:
             recipe.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            return Response(
-                {
-                    "detail": "Этот рецепт не принадлежит вам и вы не"
-                    "администратор, поэтому вы не можете удалить его."
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+
+        return Response(
+            {
+                "detail": "Этот рецепт не принадлежит вам и вы не"
+                "администратор, поэтому вы не можете удалить его."
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
 
 class RecipeMinifiedSerializer(serializers.ModelSerializer):

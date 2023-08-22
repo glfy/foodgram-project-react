@@ -6,17 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('recipes', '0002_models'),
+        ("recipes", "0002_models"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ingredient',
-            name='name',
-            field=models.CharField(db_index=True, max_length=200, unique=True, verbose_name='Название ингредиента'),
+            model_name="ingredient",
+            name="name",
+            field=models.CharField(
+                db_index=True,
+                max_length=200,
+                unique=True,
+                verbose_name="Название ингредиента",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='ingredientinrecipe',
-            constraint=models.UniqueConstraint(fields=('recipe', 'ingredient'), name='unique_ingredient'),
+            model_name="ingredientinrecipe",
+            constraint=models.UniqueConstraint(
+                fields=("recipe", "ingredient"), name="unique_ingredient"
+            ),
         ),
     ]

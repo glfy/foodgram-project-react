@@ -17,7 +17,7 @@ username_validator = RegexValidator(
 )
 
 
-def validate_ingridients(value_list):
+def validate_ingredients(value_list):
     validated_ingredients = []
 
     for value in value_list:

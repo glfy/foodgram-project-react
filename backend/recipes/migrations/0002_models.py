@@ -10,38 +10,56 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('recipes', '0001_models'),
+        ("recipes", "0001_models"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='recipe',
-            name='author',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='recipes', to=settings.AUTH_USER_MODEL, verbose_name='Автор публикации'),
+            model_name="recipe",
+            name="author",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="recipes",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Автор публикации",
+            ),
         ),
         migrations.AddField(
-            model_name='recipe',
-            name='ingredients',
-            field=models.ManyToManyField(related_name='recipes', through='recipes.IngredientInRecipe', to='recipes.Ingredient', verbose_name='Список ингредиентов'),
+            model_name="recipe",
+            name="ingredients",
+            field=models.ManyToManyField(
+                related_name="recipes",
+                through="recipes.IngredientInRecipe",
+                to="recipes.Ingredient",
+                verbose_name="Список ингредиентов",
+            ),
         ),
         migrations.AddField(
-            model_name='recipe',
-            name='tags',
-            field=models.ManyToManyField(related_name='recipes', to='recipes.Tag', verbose_name='Список тегов'),
+            model_name="recipe",
+            name="tags",
+            field=models.ManyToManyField(
+                related_name="recipes", to="recipes.Tag", verbose_name="Список тегов"
+            ),
         ),
         migrations.AddField(
-            model_name='ingredientinrecipe',
-            name='ingredient',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='recipes.ingredient'),
+            model_name="ingredientinrecipe",
+            name="ingredient",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="recipes.ingredient"
+            ),
         ),
         migrations.AddField(
-            model_name='ingredientinrecipe',
-            name='recipe',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ingredient_quantities', to='recipes.recipe'),
+            model_name="ingredientinrecipe",
+            name="recipe",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="ingredient_quantities",
+                to="recipes.recipe",
+            ),
         ),
         migrations.AddIndex(
-            model_name='recipe',
-            index=models.Index(fields=['name'], name='recipes_rec_name_891f25_idx'),
+            model_name="recipe",
+            index=models.Index(fields=["name"], name="recipes_rec_name_891f25_idx"),
         ),
     ]

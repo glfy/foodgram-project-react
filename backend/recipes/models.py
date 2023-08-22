@@ -46,7 +46,6 @@ class Ingredient(models.Model):
         max_length=200,
         verbose_name="Название ингредиента",
         db_index=True,
-        unique=True,
     )
     measurement_unit = models.CharField(
         max_length=200, verbose_name="Единицы измерения"
@@ -58,6 +57,7 @@ class Ingredient(models.Model):
     class Meta:
         verbose_name = "Ингредиент"
         verbose_name_plural = "Ингредиенты"
+        unique_together = ["name", "measurement_unit"]
 
 
 class Recipe(models.Model):
@@ -108,12 +108,16 @@ class IngredientInRecipe(models.Model):
     """
 
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, related_name="ingredient_quantities"
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name="ingredient_quantities",
+        verbose_name="Рецепт",
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         related_name="ingredientinrecipe",
+        verbose_name="Ингредиент",
     )
     amount = models.PositiveIntegerField(
         verbose_name="Количество", validators=[MinValueValidator(1)]
