@@ -80,7 +80,12 @@ class Recipe(models.Model):
         Tag, verbose_name="Список тегов", related_name="recipes"
     )
     cooking_time = models.PositiveIntegerField(
-        verbose_name="Время приготовления (в минутах)"
+        verbose_name="Время приготовления (в минутах)",
+        validators=[
+            MinValueValidator(
+                1, message="Время приготовления должно быть больше 1 минуты"
+            )
+        ],
     )
     pub_date = models.DateTimeField(
         auto_now_add=True, verbose_name="Дата публикации"
@@ -120,7 +125,7 @@ class IngredientInRecipe(models.Model):
         verbose_name_plural = "Ингредиенты в рецепте"
         constraints = [
             models.UniqueConstraint(
-                fields=["recipe", "ingredient"], name="unique_ingredient"
+                fields=["recipe", "ingredient"], name="uq_recipe_ingredient"
             )
         ]
 
