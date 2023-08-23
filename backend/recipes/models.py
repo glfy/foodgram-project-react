@@ -132,3 +132,30 @@ class IngredientInRecipe(models.Model):
     def __str__(self):
         return f"""{self.amount} {self.ingredient.measurement_unit} of
                     {self.ingredient.name} in {self.recipe.name}"""
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        verbose_name="Пользователь",
+        related_name="favorite",
+    )
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        verbose_name="Рецепты",
+        related_name="favorite",
+    )
+
+    class Meta:
+        verbose_name = "Избранный рецепт"
+        verbose_name_plural = "Избранные рецепты"
+        constraints = (
+            models.UniqueConstraint(
+                fields=("user", "recipe"), name="uq_user_recipe"
+            ),
+        )
+
+    def __str__(self):
+        return f"{self.recipe} в избранном у {self.user}"

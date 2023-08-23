@@ -24,12 +24,12 @@ class User(AbstractUser):
         verbose_name="Пароль",
     )
 
-    favorite_recipes = models.ManyToManyField(
-        "recipes.Recipe",
-        related_name="favorited_by_users",
-        verbose_name="Избранные рецепты",
-        blank=True,
-    )
+    # favorite_recipes = models.ManyToManyField(
+    #     "recipes.Recipe",
+    #     related_name="favorited_by_users",
+    #     verbose_name="Избранные рецепты",
+    #     blank=True,
+    # )
 
     shopping_cart = models.ManyToManyField(
         "recipes.Recipe",

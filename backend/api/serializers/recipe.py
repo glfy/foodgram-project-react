@@ -8,7 +8,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from core.validators import validate_ingredients
-from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
+from recipes.models import (
+    Ingredient,
+    IngredientInRecipe,
+    Recipe,
+    Tag,
+    Favorite,
+)
 
 from .users import CustomUserSerializer
 
@@ -65,10 +71,10 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
-    def get_is_favorited(self, obj):
+    def get_is_favorited(self, object):
         user = self.context["request"].user
         if user.is_authenticated:
-            return obj.favorited_by_users.filter(id=user.id).exists()
+            return Favorite.objects.filter(user=user, recipe=object).exists()
         return False
 
     def get_is_in_shopping_cart(self, obj):
@@ -152,11 +158,10 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
 
         return serializer.data
 
-    def get_is_favorited(self, obj):
+    def get_is_favorited(self, object):
         user = self.context["request"].user
-
         if user.is_authenticated:
-            return obj.favorited_by_users.filter(id=user.id).exists()
+            return Favorite.objects.filter(user=user, recipe=object).exists()
         return False
 
     def get_is_in_shopping_cart(self, obj):

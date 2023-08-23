@@ -26,7 +26,13 @@ from api.serializers.users import (
     CustomUserSerializer,
     UserSubscriptionsSerializer,
 )
-from recipes.models import Ingredient, IngredientInRecipe, Recipe, Tag
+from recipes.models import (
+    Ingredient,
+    IngredientInRecipe,
+    Recipe,
+    Tag,
+    Favorite,
+)
 from users.models import User, Subscription
 
 from .filters import RecipeFilter
@@ -86,8 +92,7 @@ class CustomUserViewSet(UserViewSet):
 
         if request.method == "POST":
             if Subscription.objects.filter(
-                subscriber=subscriber,
-                subscribed_to=to_subscribe,
+                subscriber=subscriber, subscribed_to=to_subscribe
             ).exists():
                 return Response(
                     {"detail": "Автор уже добавлен в подписки."},
@@ -104,8 +109,7 @@ class CustomUserViewSet(UserViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         deleted_count = Subscription.objects.filter(
-            subscriber=subscriber,
-            subscribed_to=to_subscribe,
+            subscriber=subscriber, subscribed_to=to_subscribe
         ).delete()
         if deleted_count == 0:
             return Response(
@@ -146,25 +150,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[IsAuthenticated],
     )
     def favorite(self, request, pk=None):
-        recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
 
         if request.method == "POST":
-            if user.favorite_recipes.filter(id=recipe.id).exists():
+            if Favorite.objects.filter(user=user, recipe=recipe).exists():
                 return Response(
                     {"detail": "Рецепт уже есть в избранном."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-
-            user.favorite_recipes.add(recipe)
-            user.save()
-
+            Favorite.objects.create(user=user, recipe=recipe)
             serializer = RecipeMinifiedSerializer(
                 recipe, context={"request": request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        deleted_count = user.favorite_recipes.remove(recipe)
+        deleted_count = Favorite.objects.filter(
+            user=user, recipe=recipe
+        ).delete()
         if deleted_count == 0:
             return Response(
                 {"detail": "Рецепта нет в избранном."},
@@ -202,7 +205,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    # Your view
     @action(
         detail=False, methods=["GET"], permission_classes=[IsAuthenticated]
     )
