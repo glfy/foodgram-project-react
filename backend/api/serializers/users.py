@@ -62,8 +62,14 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
             RecipeMinifiedSerializer,
         )
 
+        request = self.context.get("request")
+        recipes_limit = request.query_params.get("recipes_limit")
+        recipes = object.recipes.all()
+        if recipes_limit:
+            recipes = recipes[: int(recipes_limit)]
+
         serializer = RecipeMinifiedSerializer(
-            object.recipes, many=True, read_only=True
+            recipes, many=True, read_only=True
         )
         return serializer.data
 
