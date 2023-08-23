@@ -1,6 +1,5 @@
-from rest_framework.views import exception_handler
-
 from django.http import HttpResponseForbidden, HttpResponseNotFound
+from rest_framework.views import exception_handler
 
 
 def custom_exception_handler(exc, context):
