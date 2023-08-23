@@ -1,12 +1,6 @@
-from typing import Any
-
 from django.contrib import admin
-from django.db.models.query import QuerySet
-from django.http.request import HttpRequest
-from django.shortcuts import get_object_or_404
 
-from .models import Ingredient, IngredientInRecipe, Recipe, Tag, Favorite
-from django.db.models import Count
+from .models import Favorite, Ingredient, IngredientInRecipe, Recipe, Tag
 
 
 @admin.register(Tag)
@@ -46,7 +40,6 @@ class RecipeAdmin(admin.ModelAdmin):
     save_on_top = True
 
     def favorited_by_users_count(self, object):
-        """Вычисляет количество добавлений рецепта в избранное."""
         return object.favorite.count()
 
     favorited_by_users_count.short_description = (

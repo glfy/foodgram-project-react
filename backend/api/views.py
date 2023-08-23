@@ -1,39 +1,31 @@
 from io import BytesIO
 
+from django_filters.rest_framework import DjangoFilterBackend
+from djoser.views import UserViewSet
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import (
+    IsAuthenticated, IsAuthenticatedOrReadOnly,
+)
+from rest_framework.response import Response
+
 from django.db.models import Count, Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
-from djoser.views import UserViewSet
-from rest_framework import serializers, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import (
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-)
-from rest_framework.response import Response
 
 from api.paginators import PageLimitPagination
 from api.permissions import IsAuthorOrReadOnly
 from api.serializers.recipe import (
-    IngredientSerializer,
-    RecipeMinifiedSerializer,
-    RecipeReadSerializer,
-    RecipeWriteSerializer,
-    TagSerializer,
+    IngredientSerializer, RecipeMinifiedSerializer, RecipeReadSerializer,
+    RecipeWriteSerializer, TagSerializer,
 )
 from api.serializers.users import (
-    CustomUserSerializer,
-    UserSubscriptionsSerializer,
+    CustomUserSerializer, UserSubscriptionsSerializer,
 )
 from recipes.models import (
-    Ingredient,
-    IngredientInRecipe,
-    Recipe,
-    Tag,
-    Favorite,
+    Favorite, Ingredient, IngredientInRecipe, Recipe, ShoppingCart, Tag,
 )
-from users.models import User, Subscription
+from users.models import Subscription, User
 
 from .filters import RecipeFilter
 
@@ -181,23 +173,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=["POST", "DELETE"],
     )
     def shopping_cart(self, request, pk=None):
-        recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
+
         if request.method == "POST":
-            if user.shopping_cart.filter(id=recipe.id).exists():
+            if ShoppingCart.objects.filter(user=user, recipe=recipe).exists():
                 return Response(
                     {"detail": "Рецепт уже добавлен в корзину."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            user.shopping_cart.add(recipe)
-            user.save()
+            ShoppingCart.objects.create(user=user, recipe=recipe)
             serializer = RecipeMinifiedSerializer(
                 recipe, context={"request": request}
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        deleted_count = user.shopping_cart.remove(recipe)
+        deleted_count = ShoppingCart.objects.filter(
+            user=user, recipe=recipe
+        ).delete()
         if deleted_count == 0:
             return Response(
                 {"detail": "Рецепта нет в корзине."},
@@ -225,7 +219,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         ingredients = (
             IngredientInRecipe.objects.filter(
-                recipe__recipes_in_shopping_cart=request.user.id
+                recipe__shopping_cart__user=request.user
             )
             .order_by("ingredient__name")
             .values("ingredient__name", "ingredient__measurement_unit")
@@ -255,39 +249,3 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
         if name_query:
             queryset = queryset.filter(Q(name__icontains=name_query.lower()))
         return queryset
-
-
-class ShoppingCartViewSet(viewsets.GenericViewSet):
-    permission_classes = (IsAuthenticated,)
-    pagination_class = PageLimitPagination
-    serializer_class = RecipeMinifiedSerializer
-
-    @action(
-        detail=False, methods=["GET"], permission_classes=[IsAuthenticated]
-    )
-    def download_shopping_cart(self, request):
-        ingredients = (
-            IngredientInRecipe.objects.filter(
-                recipe__shopping_cart__user=request.user
-            )
-            .order_by("ingredient__name")
-            .values("ingredient__name", "ingredient__measurement_unit")
-            .annotate(amount=Sum("amount"))
-        )
-
-        # concatenate ingredient names and amounts to txt
-        shopping_list = "\n".join(
-            [
-                f"""{ing['ingredient__name']} - {ing['amount']}
-                    {ing['ingredient__measurement_unit']}"""
-                for ing in ingredients
-            ]
-        )
-
-        response = HttpResponse(
-            "\n".join(shopping_list), content_type="text/plain"
-        )
-        response[
-            "Content-Disposition"
-        ] = "attachment; filename=shooping_list.txt"
-        return response

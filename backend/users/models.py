@@ -24,22 +24,6 @@ class User(AbstractUser):
         verbose_name="Пароль",
     )
 
-    # favorite_recipes = models.ManyToManyField(
-    #     "recipes.Recipe",
-    #     related_name="favorited_by_users",
-    #     verbose_name="Избранные рецепты",
-    #     blank=True,
-    # )
-
-    shopping_cart = models.ManyToManyField(
-        "recipes.Recipe",
-        related_name="recipes_in_shopping_cart",
-        verbose_name="Рецепты в корзине",
-        default=False,
-        editable=False,
-        blank=True,
-    )
-
     class Meta:
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"

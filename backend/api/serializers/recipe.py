@@ -1,19 +1,14 @@
 import base64
 
+from rest_framework import serializers, status
+from rest_framework.response import Response
+
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
-from rest_framework import serializers, status
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
 from core.validators import validate_ingredients
 from recipes.models import (
-    Ingredient,
-    IngredientInRecipe,
-    Recipe,
-    Tag,
-    Favorite,
+    Favorite, Ingredient, IngredientInRecipe, Recipe, ShoppingCart, Tag,
 )
 
 from .users import CustomUserSerializer
@@ -77,10 +72,12 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             return Favorite.objects.filter(user=user, recipe=object).exists()
         return False
 
-    def get_is_in_shopping_cart(self, obj):
+    def get_is_in_shopping_cart(self, object):
         user = self.context["request"].user
         if user.is_authenticated:
-            return obj.recipes_in_shopping_cart.filter(id=user.id).exists()
+            return ShoppingCart.objects.filter(
+                user=user, recipe=object
+            ).exists()
         return False
 
     class Meta:
@@ -155,7 +152,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         serializer = RecipeReadSerializer(
             recipe, context={"request": self.context.get("request")}
         )
-
         return serializer.data
 
     def get_is_favorited(self, object):
@@ -164,10 +160,10 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             return Favorite.objects.filter(user=user, recipe=object).exists()
         return False
 
-    def get_is_in_shopping_cart(self, obj):
+    def get_is_in_shopping_cart(self, object):
         user = self.context["request"].user
         if user.is_authenticated:
-            return obj.recipes_in_shopping_cart.filter(user=user).exists()
+            return Favorite.objects.filter(user=user, recipe=object).exists()
         return False
 
     def update(self, instance, validated_data):

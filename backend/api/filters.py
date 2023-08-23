@@ -1,5 +1,6 @@
-from django.db.models import Q
 from django_filters import FilterSet, filters
+
+from django.db.models import Q
 
 from recipes.models import Recipe, Tag
 
@@ -35,13 +36,10 @@ class RecipeFilter(FilterSet):
         return queryset.filter(~Q(favorite__user=user))
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
-        if not self.request.user.is_authenticated:
+        user = self.request.user
+        if not user.is_authenticated:
             return queryset
 
         if value:
-            return queryset.filter(
-                recipes_in_shopping_cart=self.request.user.id
-            )
-        return queryset.filter(
-            ~Q(recipes_in_shopping_cart=self.request.user.id)
-        )
+            return queryset.filter(shopping_cart__user=user)
+        return queryset.filter(~Q(shopping__cart=user))

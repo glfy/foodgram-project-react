@@ -153,9 +153,37 @@ class Favorite(models.Model):
         verbose_name_plural = "Избранные рецепты"
         constraints = (
             models.UniqueConstraint(
-                fields=("user", "recipe"), name="uq_user_recipe"
+                fields=("user", "recipe"), name="uq_favorites_user_recipe"
             ),
         )
 
     def __str__(self):
         return f"{self.recipe} в избранном у {self.user}"
+
+
+class ShoppingCart(models.Model):
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE,
+        related_name="shopping_cart",
+        verbose_name="Рецепт",
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="shopping_cart",
+        verbose_name="Пользователь",
+    )
+
+    class Meta:
+        verbose_name = "Рецепт в корзине"
+        verbose_name_plural = "Рецепты в корзине"
+        ordering = ("recipe",)
+        constraints = (
+            models.UniqueConstraint(
+                fields=["user", "recipe"], name="uq_shopping_cart_user_recipe"
+            ),
+        )
+
+    def __str__(self):
+        return f"{self.recipe} в списке покупок у {self.user}"
