@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = []
@@ -33,7 +32,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "measurement_unit",
-                    models.CharField(max_length=200, verbose_name="Единицы измерения"),
+                    models.CharField(
+                        max_length=200, verbose_name="Единицы измерения"
+                    ),
                 ),
             ],
             options={
@@ -56,7 +57,9 @@ class Migration(migrations.Migration):
                 (
                     "amount",
                     models.PositiveIntegerField(
-                        validators=[django.core.validators.MinValueValidator(1)],
+                        validators=[
+                            django.core.validators.MinValueValidator(1)
+                        ],
                         verbose_name="Количество",
                     ),
                 ),
@@ -80,7 +83,9 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "name",
-                    models.CharField(max_length=200, verbose_name="Название рецепта"),
+                    models.CharField(
+                        max_length=200, verbose_name="Название рецепта"
+                    ),
                 ),
                 (
                     "image",
@@ -132,7 +137,10 @@ class Migration(migrations.Migration):
                 (
                     "color",
                     models.CharField(
-                        blank=True, max_length=7, null=True, verbose_name="Цвет в HEX"
+                        blank=True,
+                        max_length=7,
+                        null=True,
+                        verbose_name="Цвет в HEX",
                     ),
                 ),
                 (

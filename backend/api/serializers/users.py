@@ -58,8 +58,9 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
         ).exists()
 
     def get_recipes(self, object):
-        from .recipe import \
-            RecipeMinifiedSerializer  # Import here to avoid circular import
+        from .recipe import (  # Import here to avoid circular import
+            RecipeMinifiedSerializer,
+        )
 
         serializer = RecipeMinifiedSerializer(
             object.recipes, many=True, read_only=True

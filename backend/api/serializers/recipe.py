@@ -1,14 +1,21 @@
 import base64
 
-from core.validators import validate_ingredients
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
-from recipes.models import (Favorite, Ingredient, IngredientInRecipe, Recipe,
-                            ShoppingCart, Tag)
-from rest_framework import serializers, status
-from rest_framework.response import Response
 
 from .users import CustomUserSerializer
+
+from core.validators import validate_ingredients
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    IngredientInRecipe,
+    Recipe,
+    ShoppingCart,
+    Tag,
+)
+from rest_framework import serializers, status
+from rest_framework.response import Response
 
 
 class Base64ImageField(serializers.ImageField):

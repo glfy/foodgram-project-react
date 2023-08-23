@@ -1,7 +1,8 @@
-from core.validators import slug_validator
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
+
+from core.validators import slug_validator
 
 User = get_user_model()
 

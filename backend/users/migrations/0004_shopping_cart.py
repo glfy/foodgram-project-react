@@ -4,21 +4,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recipes', '0003_unique_recipe_ingredients'),
-        ('users', '0003_alter_user_subscriptions'),
+        ("recipes", "0003_unique_recipe_ingredients"),
+        ("users", "0003_alter_user_subscriptions"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='shopping_cart',
-            field=models.ManyToManyField(blank=True, default=False, editable=False, related_name='recipes_in_shopping_cart', to='recipes.Recipe', verbose_name='Рецепты в корзине'),
+            model_name="user",
+            name="shopping_cart",
+            field=models.ManyToManyField(
+                blank=True,
+                default=False,
+                editable=False,
+                related_name="recipes_in_shopping_cart",
+                to="recipes.Recipe",
+                verbose_name="Рецепты в корзине",
+            ),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='favorite_recipes',
-            field=models.ManyToManyField(blank=True, related_name='favorited_by_users', to='recipes.Recipe', verbose_name='Избранные рецепты'),
+            model_name="user",
+            name="favorite_recipes",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="favorited_by_users",
+                to="recipes.Recipe",
+                verbose_name="Избранные рецепты",
+            ),
         ),
     ]

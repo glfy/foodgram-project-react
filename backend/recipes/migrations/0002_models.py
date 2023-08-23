@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -39,14 +38,17 @@ class Migration(migrations.Migration):
             model_name="recipe",
             name="tags",
             field=models.ManyToManyField(
-                related_name="recipes", to="recipes.Tag", verbose_name="Список тегов"
+                related_name="recipes",
+                to="recipes.Tag",
+                verbose_name="Список тегов",
             ),
         ),
         migrations.AddField(
             model_name="ingredientinrecipe",
             name="ingredient",
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.CASCADE, to="recipes.ingredient"
+                on_delete=django.db.models.deletion.CASCADE,
+                to="recipes.ingredient",
             ),
         ),
         migrations.AddField(
@@ -60,6 +62,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddIndex(
             model_name="recipe",
-            index=models.Index(fields=["name"], name="recipes_rec_name_891f25_idx"),
+            index=models.Index(
+                fields=["name"], name="recipes_rec_name_891f25_idx"
+            ),
         ),
     ]

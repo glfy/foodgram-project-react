@@ -1,6 +1,7 @@
-from core.validators import username_validator
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+from core.validators import username_validator
 
 
 class User(AbstractUser):

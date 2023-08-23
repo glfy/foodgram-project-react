@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("recipes", "0003_unique_recipe_ingredients"),
     ]
@@ -15,7 +14,9 @@ class Migration(migrations.Migration):
             model_name="ingredient",
             name="name",
             field=models.CharField(
-                db_index=True, max_length=200, verbose_name="Название ингредиента"
+                db_index=True,
+                max_length=200,
+                verbose_name="Название ингредиента",
             ),
         ),
         migrations.AlterField(

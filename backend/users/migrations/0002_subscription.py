@@ -5,15 +5,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0001_models'),
+        ("users", "0001_models"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='subscriptions',
-            field=models.ManyToManyField(blank=True, related_name='subscribers', to=settings.AUTH_USER_MODEL),
+            model_name="user",
+            name="subscriptions",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="subscribers",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

@@ -5,15 +5,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('recipes', '0005_change_constraint_ingridients'),
+        ("recipes", "0005_change_constraint_ingridients"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='recipe',
-            name='cooking_time',
-            field=models.PositiveIntegerField(validators=[django.core.validators.MinValueValidator(1, 'Время приготовления должно быть больше 1 минуты')], verbose_name='Время приготовления (в минутах)'),
+            model_name="recipe",
+            name="cooking_time",
+            field=models.PositiveIntegerField(
+                validators=[
+                    django.core.validators.MinValueValidator(
+                        1, "Время приготовления должно быть больше 1 минуты"
+                    )
+                ],
+                verbose_name="Время приготовления (в минутах)",
+            ),
         ),
     ]

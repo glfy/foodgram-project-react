@@ -6,27 +6,50 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0005_remove_user_is_subscribed'),
+        ("users", "0005_remove_user_is_subscribed"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='user',
-            name='subscriptions',
+            model_name="user",
+            name="subscriptions",
         ),
         migrations.CreateModel(
-            name='Subscription',
+            name="Subscription",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('subscriber', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscriptions', to=settings.AUTH_USER_MODEL, verbose_name='Подписчик')),
-                ('to_subscribe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subscribed_to', to=settings.AUTH_USER_MODEL, verbose_name='Пользователь на которого подписан')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "subscriber",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="subscriptions",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Подписчик",
+                    ),
+                ),
+                (
+                    "to_subscribe",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="subscribed_to",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Пользователь на которого подписан",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Подписка',
-                'verbose_name_plural': 'Подписки',
-                'unique_together': {('subscriber', 'to_subscribe')},
+                "verbose_name": "Подписка",
+                "verbose_name_plural": "Подписки",
+                "unique_together": {("subscriber", "to_subscribe")},
             },
         ),
     ]

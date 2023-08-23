@@ -5,18 +5,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0006_subscription_model'),
+        ("users", "0006_subscription_model"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='subscriptions',
-            field=models.ManyToManyField(blank=True, default=False, editable=False, related_name='subscribers', to=settings.AUTH_USER_MODEL, verbose_name='Подписан ли текущий пользователь на этого'),
+            model_name="user",
+            name="subscriptions",
+            field=models.ManyToManyField(
+                blank=True,
+                default=False,
+                editable=False,
+                related_name="subscribers",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Подписан ли текущий пользователь на этого",
+            ),
         ),
         migrations.DeleteModel(
-            name='Subscription',
+            name="Subscription",
         ),
     ]
