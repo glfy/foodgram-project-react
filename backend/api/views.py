@@ -1,10 +1,8 @@
-from io import BytesIO
-
-from django.db.models import Count, Q, Sum
-from django.http import HttpResponse
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 
 from .filters import RecipeFilter
+from .utils import generate_shopping_list_response
 
 from api.paginators import PageLimitPagination
 from api.permissions import IsAuthorOrReadOnly
@@ -21,14 +19,7 @@ from api.serializers.users import (
 )
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (
-    Favorite,
-    Ingredient,
-    IngredientInRecipe,
-    Recipe,
-    ShoppingCart,
-    Tag,
-)
+from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import (
@@ -47,10 +38,7 @@ class CustomUserViewSet(UserViewSet):
     pagination_class = PageLimitPagination
     filterset_class = RecipeFilter
 
-    @action(
-        detail=False,
-        methods=["GET"],
-    )
+    @action(detail=False, methods=["GET"])
     def subscriptions(self, request):
         subscriber = request.user
         queryset = (
@@ -212,35 +200,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=False, methods=["GET"], permission_classes=[IsAuthenticated]
     )
     def download_shopping_cart(self, request):
-        def create_shopping_list_file(ingredients):
-            shopping_list = "\n".join(
-                [
-                    f"{ing['ingredient__name']} - {ing['amount']} "
-                    f"{ing['ingredient__measurement_unit']}"
-                    for ing in ingredients
-                ]
-            )
-
-            buffer = BytesIO()
-            buffer.write(shopping_list.encode())
-            buffer.seek(0)
-            return buffer
-
-        ingredients = (
-            IngredientInRecipe.objects.select_related()
-            .filter(recipe__shopping_cart__user=request.user)
-            .order_by("ingredient__name")
-            .values("ingredient__name", "ingredient__measurement_unit")
-            .annotate(amount=Sum("amount"))
-        )
-
-        shopping_list_buffer = create_shopping_list_file(ingredients)
-
-        response = HttpResponse(
-            shopping_list_buffer,
-            content_type="text/plain",
-        )
-        response["Content-Disposition"] = "attachment; filename=pipi.txt"
+        user = request.user
+        response = generate_shopping_list_response(user)
         return response
 
 
