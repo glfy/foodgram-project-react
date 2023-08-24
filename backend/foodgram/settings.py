@@ -67,20 +67,15 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 
 DATABASES = {
-    "dev": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "db.sqlite3",
-    },
-    "production": {
+    "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("POSTGRES_DB", default="postgres"),
         "USER": os.getenv("POSTGRES_USER", default="postgres"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="postgres"),
         "HOST": os.getenv("DB_HOST", default="localhost"),
         "PORT": os.getenv("DB_PORT", default=5432),
-    },
+    }
 }
-DATABASES["default"] = DATABASES["dev" if DEBUG else "production"]
 
 
 AUTH_PASSWORD_VALIDATORS = [

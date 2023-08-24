@@ -1,9 +1,9 @@
 import base64
 
+from rest_framework import serializers
+
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
-
-from .users import CustomUserSerializer
 
 from core.validators import validate_ingredients
 from recipes.models import (
@@ -14,8 +14,8 @@ from recipes.models import (
     ShoppingCart,
     Tag,
 )
-from rest_framework import serializers, status
-from rest_framework.response import Response
+
+from .users import CustomUserSerializer
 
 
 class Base64ImageField(serializers.ImageField):
@@ -70,20 +70,6 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
-    def get_is_favorited(self, object):
-        user = self.context["request"].user
-        if user.is_authenticated:
-            return Favorite.objects.filter(user=user, recipe=object).exists()
-        return False
-
-    def get_is_in_shopping_cart(self, object):
-        user = self.context["request"].user
-        if user.is_authenticated:
-            return ShoppingCart.objects.filter(
-                user=user, recipe=object
-            ).exists()
-        return False
-
     class Meta:
         model = Recipe
         fields = (
@@ -102,6 +88,20 @@ class RecipeReadSerializer(serializers.ModelSerializer):
             "is_favorited",
             "is_shopping_cart",
         )
+
+    def get_is_favorited(self, object):
+        user = self.context["request"].user
+        if user.is_authenticated:
+            return Favorite.objects.filter(user=user, recipe=object).exists()
+        return False
+
+    def get_is_in_shopping_cart(self, object):
+        user = self.context["request"].user
+        if user.is_authenticated:
+            return ShoppingCart.objects.filter(
+                user=user, recipe=object
+            ).exists()
+        return False
 
 
 class RecipeWriteSerializer(serializers.ModelSerializer):
@@ -188,20 +188,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             )
 
         return super().update(instance, validated_data)
-
-    def delete_recipe(self, request, pk=None):
-        recipe = self.instance
-        if recipe.author == request.user or request.user.is_staff:
-            recipe.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-
-        return Response(
-            {
-                "detail": "Этот рецепт не принадлежит вам и вы не"
-                "администратор, поэтому вы не можете удалить его."
-            },
-            status=status.HTTP_400_BAD_REQUEST,
-        )
 
 
 class RecipeMinifiedSerializer(serializers.ModelSerializer):

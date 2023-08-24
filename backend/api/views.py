@@ -1,8 +1,15 @@
+from django_filters.rest_framework import DjangoFilterBackend
+from djoser.views import UserViewSet
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import (
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
+from rest_framework.response import Response
+
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
-
-from .filters import RecipeFilter
-from .utils import generate_shopping_list_response
 
 from api.paginators import PageLimitPagination
 from api.permissions import IsAuthorOrReadOnly
@@ -17,17 +24,11 @@ from api.serializers.users import (
     CustomUserSerializer,
     UserSubscriptionsSerializer,
 )
-from django_filters.rest_framework import DjangoFilterBackend
-from djoser.views import UserViewSet
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import (
-    IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-)
-from rest_framework.response import Response
 from users.models import Subscription, User
+
+from .filters import RecipeFilter
+from .utils import generate_shopping_list_response
 
 
 class CustomUserViewSet(UserViewSet):

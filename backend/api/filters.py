@@ -1,6 +1,7 @@
+from django_filters import FilterSet, filters
+
 from django.db.models import Q
 
-from django_filters import FilterSet, filters
 from recipes.models import Recipe, Tag
 
 

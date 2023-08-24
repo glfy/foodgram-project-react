@@ -51,3 +51,9 @@ class Subscription(models.Model):
         verbose_name = "Подписка"
         verbose_name_plural = "Подписки"
         unique_together = ["subscriber", "subscribed_to"]
+
+    def __str__(self):
+        return (
+            f"{self.subscriber.username} подписан на"
+            "{self.subscribed_to.username}"
+        )
