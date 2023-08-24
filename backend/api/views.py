@@ -112,7 +112,7 @@ class CustomUserViewSet(UserViewSet):
         deleted_count = Subscription.objects.filter(
             subscriber=subscriber, subscribed_to=to_subscribe
         ).delete()
-        if deleted_count == 0:
+        if deleted_count[0] == 0:
             return Response(
                 {"detail": "Автора нет в подписках."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -169,7 +169,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         deleted_count = Favorite.objects.filter(
             user=user, recipe=recipe
         ).delete()
-        if deleted_count == 0:
+        if deleted_count[0] == 0:
             return Response(
                 {"detail": "Рецепта нет в избранном."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -201,7 +201,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         deleted_count = ShoppingCart.objects.filter(
             user=user, recipe=recipe
         ).delete()
-        if deleted_count == 0:
+        if deleted_count[0] == 0:
             return Response(
                 {"detail": "Рецепта нет в корзине."},
                 status=status.HTTP_400_BAD_REQUEST,
