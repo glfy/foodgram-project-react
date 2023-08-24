@@ -26,3 +26,10 @@ admin.site.site_title = "Foodgram Admin"
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ("subscriber", "subscribed_to")
     search_fields = ("subscriber", "subscribed_to")
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("subscriber", "subscribed_to")
+        )

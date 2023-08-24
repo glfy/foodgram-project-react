@@ -51,11 +51,11 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, object):
         user = self.context["request"].user
-        if user.is_anonymous or (user == object):
-            return False
-        return Subscription.objects.filter(
-            subscriber=user.id, subscribed_to=object.id
-        ).exists()
+        if user.is_authenticated or (user != object):
+            return Subscription.objects.filter(
+                subscriber=user.id, subscribed_to=object.id
+            ).exists()
+        return False
 
     def get_recipes(self, object):
         from .recipe import (  # Import here to avoid circular import
@@ -67,6 +67,8 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
         recipes = object.recipes.all()
         if recipes_limit:
             recipes = recipes[: int(recipes_limit)]
+
+        recipes = recipes.prefetch_related("tags", "ingredients")
 
         serializer = RecipeMinifiedSerializer(
             recipes, many=True, read_only=True

@@ -1,30 +1,3 @@
-пока болванка по аналогии с китиграмм, когда буду деплоить поправлю конкретные шаги
-
-картинки не работают, но все равно придется все менять при деплое
-
-инфра_прод, entrypoint, докерфайл бэка это заготовки (ну точнее сначала я пыталась контейнер бэка тоже сделать, пока не нашла простой способ подключить фронт)
-
-я тебе писала в пачке, но ты не ответил
- 1. экспешнс для 401: в джанго нет прописанного 401 и получается два варианта – либо
-как у меня, либо через
- class HttpResponseUnauthorized(HttpResponse):
-def init self;
-self.status_ code = 401
-
-return HttpResponseUnauthorized ()
-
-что выглядит супер избыточным
-
-2.  ты пишешь что надо использовать постгрес, но ведь мы разрабатываем на
-склайт, чтоб было проще тестить, а потом если весь код ок, то уже перед
-деплоем меняем на постгрес
-сча не вижу если честно смысла менять и прыгать с бд на бд, когда мы просто
-разбираемся с бэком
-
-3. у меня импорты так как ставит айсорт, я не понимаю, как ты просишь их
-перенастроить в фильтрах
-
-
 # <p align="center">  Foodgram </p>
 
 <p id="description">Embark on a culinary journey with Foodgram – your ultimate online platform for sharing, discovering, and creating recipes that tantalize the taste buds. From delectable delights to must-try masterpieces, we've got your cooking inspiration covered.

@@ -46,6 +46,12 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = [IngredientInRecipeInline]
     save_on_top = True
 
+    def get_queryset(self, request):
+        queryset = Recipe.objects.select_related("author").prefetch_related(
+            "tags", "ingredients"
+        )
+        return queryset
+
     def favorited_by_users_count(self, object):
         return object.favorite.count()
 

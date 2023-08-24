@@ -227,9 +227,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return buffer
 
         ingredients = (
-            IngredientInRecipe.objects.filter(
-                recipe__shopping_cart__user=request.user
-            )
+            IngredientInRecipe.objects.select_related()
+            .filter(recipe__shopping_cart__user=request.user)
             .order_by("ingredient__name")
             .values("ingredient__name", "ingredient__measurement_unit")
             .annotate(amount=Sum("amount"))
