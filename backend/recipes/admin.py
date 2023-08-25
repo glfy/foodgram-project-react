@@ -16,6 +16,12 @@ class TagAdmin(admin.ModelAdmin):
     search_fields = ("name", "color")
     save_on_top = True
 
+    def get_queryset(self, request):
+        queryset = (
+            super().get_queryset(request).prefetch_related("recipes__author")
+        )
+        return queryset
+
 
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
@@ -23,6 +29,12 @@ class IngredientAdmin(admin.ModelAdmin):
     search_fields = ("name",)
     list_filter = ("name",)
     save_on_top = True
+
+    def get_queryset(self, request):
+        queryset = (
+            super().get_queryset(request).prefetch_related("recipes__author")
+        )
+        return queryset
 
 
 class IngredientInRecipeInline(admin.TabularInline):
@@ -47,8 +59,11 @@ class RecipeAdmin(admin.ModelAdmin):
     save_on_top = True
 
     def get_queryset(self, request):
-        queryset = Recipe.objects.select_related("author").prefetch_related(
-            "tags", "ingredients"
+        queryset = (
+            super()
+            .get_queryset(request)
+            .select_related("author")
+            .prefetch_related("tags", "ingredients")
         )
         return queryset
 
@@ -64,7 +79,23 @@ class RecipeAdmin(admin.ModelAdmin):
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ("recipe", "user")
 
+    def get_queryset(self, request):
+        queryset = (
+            super()
+            .get_queryset(request)
+            .select_related("recipe__author", "user")
+        )
+        return queryset
+
 
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ("recipe", "user")
+
+    def get_queryset(self, request):
+        queryset = (
+            super()
+            .get_queryset(request)
+            .select_related("recipe__author", "user")
+        )
+        return queryset

@@ -1,7 +1,6 @@
 from io import BytesIO
 
 from django.db.models import Sum
-from django.http import HttpResponse
 
 from recipes.models import IngredientInRecipe
 
@@ -21,7 +20,7 @@ def create_shopping_list_file(ingredients):
     return buffer
 
 
-def generate_shopping_list_response(user):
+def generate_shopping_list(user):
     ingredients = (
         IngredientInRecipe.objects.select_related()
         .filter(recipe__shopping_cart__user=user)
@@ -30,11 +29,4 @@ def generate_shopping_list_response(user):
         .annotate(amount=Sum("amount"))
     )
 
-    shopping_list_buffer = create_shopping_list_file(ingredients)
-
-    response = HttpResponse(
-        shopping_list_buffer,
-        content_type="text/plain",
-    )
-    response["Content-Disposition"] = "attachment; filename=pipi.txt"
-    return response
+    return create_shopping_list_file(ingredients)

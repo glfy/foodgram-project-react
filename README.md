@@ -152,7 +152,7 @@ SSH_PASSPHRASE # SSH key passphrase
 
 ## 🌐 Explore the App
 
-🔗 Link to the deployed application: [Foodgram](https://your_domain)
+🔗 Link to the deployed application: [Foodgram](https://foodgramkotafilippa.hopto.org)
 
 ##
 

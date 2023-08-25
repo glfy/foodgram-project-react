@@ -9,6 +9,7 @@ from rest_framework.permissions import (
 from rest_framework.response import Response
 
 from django.db.models import Count, Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
 from api.paginators import PageLimitPagination
@@ -28,7 +29,7 @@ from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from users.models import Subscription, User
 
 from .filters import RecipeFilter
-from .utils import generate_shopping_list_response
+from .utils import generate_shopping_list
 
 
 class CustomUserViewSet(UserViewSet):
@@ -202,7 +203,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         user = request.user
-        response = generate_shopping_list_response(user)
+        shopping_list_buffer = generate_shopping_list(user)
+        response = HttpResponse(
+            shopping_list_buffer,
+            content_type="text/plain",
+        )
+        response["Content-Disposition"] = "attachment; filename=pipi.txt"
+
         return response
 
 

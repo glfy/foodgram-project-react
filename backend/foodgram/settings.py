@@ -9,6 +9,8 @@ AUTH_USER_MODEL = "users.User"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+CSRF_TRUSTED_ORIGINS = ["http://localhost:1337"]
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
@@ -136,9 +138,7 @@ DJOSER = {
 
 
 STATIC_URL = "/static/"
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATIC_ROOT = "/app/static"
-
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
