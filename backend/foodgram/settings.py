@@ -9,7 +9,7 @@ AUTH_USER_MODEL = "users.User"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-CSRF_TRUSTED_ORIGINS = ["http://localhost:1337"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:8888", "https://*"]
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
