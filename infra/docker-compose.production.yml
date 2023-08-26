@@ -34,7 +34,7 @@ services:
       - 8888:80
     volumes:
       - ./frontend/build:/usr/share/nginx/html/
-      - static_volume:/etc/nginx/html/static
+      - static_volume:/etc/nginx/html/static/
       - media_volume:/usr/src/app/media/      
       - ./docs/:/usr/share/nginx/html/api/docs/
     depends_on:
