@@ -133,3 +133,4 @@ dmypy.json
 .idea
 
 infra_dev/
+infra_prod/

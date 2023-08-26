@@ -23,7 +23,7 @@ git clone https://github.com/glfy/foodgram-project-react.git
 cd foodgram
 ```
 
-<p>2. Create and activate a .env file:</p>
+<p>2. Create and activate a .env file like in .env.example:</p>
 
 ```
 Database settings
@@ -96,12 +96,61 @@ scp -i path_to_SSH/SSH_name docker-compose.production.yml username@server_ip:/ho
 sudo docker-compose -f docker-compose.production.yml up -d
 ```
 
-<p>6. Perform migrations and collect backend static files:</p>
+<p>6. Change properties of automatically created superuser:</p>
+
+In this project, an automatic superuser is created during the initialization of the Docker containers. If you need to change the properties of this superuser, follow the steps below.
+
+<p>6.1. Update .env File (Optional)</p>
+
+If you have defined the superuser credentials in the .env file, you can modify the values of the following environment variables:
+
+DJANGO_SUPERUSER_USERNAME: The desired username for the superuser.
+
+DJANGO_SUPERUSER_EMAIL: The desired email address for the superuser.
+
+DJANGO_SUPERUSER_PASSWORD: The desired password for the superuser.
+
+<p>6.2. Modify entrypoint.sh (Optional)</p>
+
+If you've set up the entrypoint.sh script to create the superuser, you can modify the username, email, and password values directly in the script:
+```
+# entrypoint.sh
+
+# ... other setup ...
+
+# Set the desired superuser properties
+DJANGO_SUPERUSER_USERNAME="new_admin"
+DJANGO_SUPERUSER_EMAIL="new_admin@example.com"
+DJANGO_SUPERUSER_PASSWORD="new_password123"
+
+# ... rest of the script ...
+```
+This will override any values defined in the .env file and create a superuser with the specified properties on container initialization.
+
+<p>6.3. Create Superuser Manually</p>
+Alternatively, you can modify the superuser manually by executing commands inside the backend container:
 
 ```
-sudo docker-compose -f docker-compose.production.yml exec backend python manage.py migrate
-sudo docker-compose -f docker-compose.production.yml exec backend python manage.py collectstatic
-sudo docker-compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /static/static/
+# Get into the backend container
+docker exec -it foodgram_backend_container_name /bin/bash
+# Access the Django Shell
+python manage.py shell
+# Retrieve the Superuser
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+superuser = User.objects.get(username='admin')
+# Update properties
+superuser.username = 'new_username'
+superuser.email = 'new_email@example.com'
+superuser.set_password('new_password')
+superuser.save()
+# Exit the shell
+exit()
+# Exit the container
+exit
+# Restart containers for changes to take effect
+docker-compose -f docker-compose.production.yml restart
 ```
 
 <p>7. Open the Nginx config:</p>
@@ -115,7 +164,7 @@ sudo nano /etc/nginx/sites-enabled/default
 ```
 location / {
 proxy_set_header Host $http_host;
-proxy_pass <http://127.0.0.1:9000>;
+proxy_pass <http://127.0.0.1:8888>;
 }
 ```
 

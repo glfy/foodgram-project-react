@@ -11,8 +11,10 @@ then
 
     echo "PostgreSQL started"
 fi
-# set -e
 
+if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_EMAIL" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
+    python manage.py create_superuser
+fi
 
 python manage.py migrate --noinput
 python manage.py import_csv
