@@ -2,6 +2,7 @@ version: '3'
 
 services:
   backend:
+    container_name: foodgram_backend
     image: glfmn/foodgram_backend
     volumes:
       - static_volume:/usr/src/app/static
@@ -18,7 +19,9 @@ services:
     env_file:
      - .env.dev
     restart: always
+
   frontend:
+    container_name: foodgram_frontend
     image: glfmn/foodgram_frontend
     volumes:
       - ./frontend/:/app/result_build/
