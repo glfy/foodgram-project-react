@@ -1,10 +1,7 @@
 name: Main Foodgram workflow
 
-on:
-  push:
-    branches:
-      - main
-
+on: [push]
+  
 env:
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
   DEBUG: True
