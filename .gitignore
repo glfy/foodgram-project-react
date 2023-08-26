@@ -134,3 +134,5 @@ dmypy.json
 
 infra_dev/
 infra_prod/
+
+.DS_Store
