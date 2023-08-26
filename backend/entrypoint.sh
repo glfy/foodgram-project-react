@@ -13,7 +13,7 @@ then
 fi
 
 if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_EMAIL" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
-    python manage.py create_superuser
+    python manage.py create_admin
 fi
 
 python manage.py migrate --noinput
