@@ -203,6 +203,12 @@ SSH_PASSPHRASE # SSH key passphrase
 
 🔗 Link to the deployed application: [Foodgram](https://foodgramkotafilippa.hopto.org)
 
+🔗 There is also an API. To view the available paths, follow the link: [API](https://foodgramkotafilippa.hopto.org/api/).
+
+🔗 And the api documentation is here: [Docs](https://foodgramkotafilippa.hopto.org/api/docs/).
+
+
+
 ##
 
 ## 💻 Built with
