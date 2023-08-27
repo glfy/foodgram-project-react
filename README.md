@@ -98,7 +98,14 @@ sudo docker-compose -f docker-compose.production.yml up -d
 
 <p>6. Change properties of automatically created superuser:</p>
 
-In this project, an automatic superuser is created during the initialization of the Docker containers. If you need to change the properties of this superuser, follow the steps below.
+In this project, an automatic superuser is created during the initialization of the Docker containers with these properties:
+```
+password = a
+username = admin
+email = a@a.ru
+```
+
+If you need to change the properties of this superuser, follow the steps below.
 
 <p>6.1. Update .env File (Optional)</p>
 
@@ -206,6 +213,8 @@ SSH_PASSPHRASE # SSH key passphrase
 🔗 There is also an API. To view the available paths, follow the link: [API](https://foodgramkotafilippa.hopto.org/api/).
 
 🔗 And the api documentation is here: [Docs](https://foodgramkotafilippa.hopto.org/api/docs/).
+
+🔗 ip address = 84.252.141.139
 
 
 
