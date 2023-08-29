@@ -13,7 +13,7 @@ class CustomUserAdmin(BaseUserAdmin):
         "first_name",
         "last_name",
     )
-    list_filter = ("email", "username", "first_name")
+    list_display_links = ("id", "email", "username", "first_name", "last_name")
     search_fields = ("username", "email", "first_name", "last_name")
     ordering = ("username",)
 
@@ -26,6 +26,7 @@ admin.site.site_title = "Foodgram Admin"
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ("subscriber", "subscribed_to")
     search_fields = ("subscriber", "subscribed_to")
+    list_display_links = ("subscriber", "subscribed_to")
 
     def get_queryset(self, request):
         return (

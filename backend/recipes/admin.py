@@ -27,7 +27,6 @@ class TagAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin):
     list_display = ("name", "measurement_unit")
     search_fields = ("name",)
-    list_filter = ("name",)
     save_on_top = True
 
     def get_queryset(self, request):
@@ -49,7 +48,7 @@ class RecipeAdmin(admin.ModelAdmin):
         "author",
         "favorited_by_users_count",
     )
-    list_filter = ("author__username", "name", "tags__name")
+    list_display_links = ("name", "author")
     search_fields = (
         "name",
         "author__username",
@@ -78,6 +77,7 @@ class RecipeAdmin(admin.ModelAdmin):
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):
     list_display = ("recipe", "user")
+    list_display_links = ("recipe", "user")
 
     def get_queryset(self, request):
         queryset = (
@@ -91,6 +91,7 @@ class FavoriteAdmin(admin.ModelAdmin):
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ("recipe", "user")
+    list_display_links = ("recipe", "user")
 
     def get_queryset(self, request):
         queryset = (

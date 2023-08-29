@@ -12,13 +12,8 @@ then
     echo "PostgreSQL started"
 fi
 
-if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_EMAIL" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
-    python manage.py create_admin
-fi
 
 python manage.py migrate --noinput
-python manage.py import_csv
-python manage.py create_tags
 python manage.py collectstatic --noinput
 
 exec "$@"
